@@ -1,0 +1,53 @@
+# 1. Mesure du temps
+
+On mesure le temps CPU pour chaque itération sur 150 itérations.
+Sans affichage : temps moyen = 15168
+Avec affichage : temps moyen = 31518
+Part du temps dédié à l'affichage : 51%
+
+On constate que l'affichage requiert presque autant de temps que les calculs.
+La part dédiée à l'affichage étant proche de 50%, une parallélisation entre calculs et affichage serait intéressante car déjà équilibrée.
+
+# 2. Parallélisation affichage contre simulation
+
+Il s'agit :
+- de savoir quelle aprtie du code mettre dans le processus 0, et quelle partie dans le processus 1.
+- de savoir quel type de données l'on envoit. Un std::vector<StatistiquesParCase>, ie le type de grille.m_statistiques ? Ca marche seulement
+ car la struct est composée uniquement de int mais il faut mettre le type MPI_INT et multiplier par 3 la taille du buffer. On pourrait aussi
+ définir un nouveau type MPI
+
+On mesure le temps CPU pour chaque itération sur 150 itérations:
+temps moyen = 48855
+Problème : il est supérieur au temps moyen en séquentiel.
+Pourtant, à l'oeil, je constate une accélération significative. Peut-être dois-je revoir la manière dont je mesure le temps, mais pour l'instant
+je vais passer à la suite.
+
+# 3. Parallélisation afichage asynchrone contre simulation
+
+temps moyen = 15256
+
+Cette fois ci, on a bien divisé par 2 le temps total d'exécution.
+L'affichage et la simulation, de coût sensiblement égal, sont maintenant exécutés en même temps.
+Le temps total est donc divisé par deux.
+
+# 4. Parallélisation OpenMP
+
+Je crois comprendre que le compilateur ignore les appels à OpenMP.
+Je ne sais pas pourquoi.
+
+Je m'arrête là, il est inutile que je finisse le projet en copiant sur mes camarades sans comprendre.
+
+
+# Bilan
+
+J'ai commencé le projet assez tard; j'ai été confronté aux difficultés de l'exécution et de la pratique.
+J'y ai passé environ 10 heures, certes peu efficaces, mais demandant beaucoup d'attention et de persévérance.
+La faiblesse des résultats que j'obtiens ne me permet pas de tirer de réelles conclusions. Néanmoins, j'en ai discuté avec mes camarades et ai
+compris les grandes lignes.
+
+J'ai pu une fois de plus constater les difficultés pratiques de ce genre de projet, avec l'utilisation de technologies relativement nouvelles.
+J'en ressors avec une meilleure compréhension de MPI, des Makefiles (dont le fonctionnement et la syntaxe ne nous ont jamais été expliqués !) et de git.
+Ce fut une bonne occasion de se remémorer l'importance du versioning, et celle d'un bon planning.
+Surtout, en dépit de l'impératif académique de vérification des compétences individuelles, j'ai pu constater combien il m'était profitable d'échanger avec
+mes camarades, afin de ne pas gâcher mon énergie et ma motivation dans un cul-de-sac. Je voudrais profiter de ce bilan pour remercier Tanguy Rolland et Pierre César
+pour leur précieuse aide et dont j'admets avoir regardé le code quand j'étais bloqué.
